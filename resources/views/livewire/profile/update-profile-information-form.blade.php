@@ -3,13 +3,16 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 
 new class extends Component
 {
+    use WithFileUploads;
+
     public string $name = '';
-    public string $email = '';
+    public $profilePicture;
 
     /**
      * Mount the component.
@@ -17,7 +20,7 @@ new class extends Component
     public function mount(): void
     {
         $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
+        $this->profilePicture = Auth::user()->profile_picture;
     }
 
     /**
@@ -29,36 +32,20 @@ new class extends Component
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'profilePicture' => ['nullable', 'image', 'max:1024'], // Validating image upload
         ]);
 
         $user->fill($validated);
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+        if ($this->profilePicture) {
+            // Store the profile pictures
+            $path = $this->profilePicture->store('profile-pictures', 'public');
+            $user->profile_picture = $path;
         }
 
         $user->save();
 
         $this->dispatch('profile-updated', name: $user->name);
-    }
-
-    /**
-     * Send an email verification notification to the current user.
-     */
-    public function sendVerification(): void
-    {
-        $user = Auth::user();
-
-        if ($user->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false));
-
-            return;
-        }
-
-        $user->sendEmailVerificationNotification();
-
-        Session::flash('status', 'verification-link-sent');
     }
 }; ?>
 
@@ -69,39 +56,40 @@ new class extends Component
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
+            {{ __("Update your account's profile information and profile picture.") }}
         </p>
     </header>
 
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
+            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" readonly required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
-
+        <!-- email field -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
+            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" value="{{ Auth::user()->email }}" readonly required autofocus autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
+        </div>
 
-            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
 
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
 
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
-                </div>
-            @endif
+        <!-- Profile Picture Upload -->
+        <div>
+            <x-input-label for="profilePicture" :value="__('Profile Picture')" />
+
+            <div class="mt-2">
+                @if (auth()->user()->profile_picture)
+                    <div class="relative inline-block">
+                        <img src="{{ auth()->user()->profile_picture }}" alt="{{ __('Profile Picture') }}" class="w-20 h-20 rounded-full object-cover">
+                    </div>
+                @else
+                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                        {{ __('No Image') }}
+                    </div>
+                @endif
+            </div>
         </div>
 
         <div class="flex items-center gap-4">
