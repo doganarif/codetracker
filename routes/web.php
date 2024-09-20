@@ -23,7 +23,7 @@ Route::view('profile', 'profile')
 
 Route::get('/auth/github', function () {
     return Socialite::driver('github')
-        ->scopes(['repo']) // Request access to private repositories
+        ->scopes(['repo', 'read:org']) // Request access to private repositories
         ->redirect();
 })->name('auth.github');
 
