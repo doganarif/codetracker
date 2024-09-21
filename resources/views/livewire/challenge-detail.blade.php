@@ -13,13 +13,13 @@
                 $isOutdated = now()->gt($challenge->end_date);
             @endphp
             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                {{ $isOutdated ? 'bg-red-100 text-red-800' : ($challenge->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') }}">
+                {{ $isOutdated ? 'bg-red-100 text-red-800' : ($is_accepted ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') }}">
                 @if ($isOutdated)
                     <x-heroicon-o-clock class="w-5 h-5 mr-2 text-red-500"/>
                     Outdated
                 @else
                     <x-heroicon-o-check-circle class="w-5 h-5 mr-2 text-green-500"/>
-                    {{ $challenge->is_active ? 'Active' : 'Inactive' }}
+                        {{ $is_accepted ? 'Active' : 'Inactive' }}
                 @endif
             </span>
         </div>
