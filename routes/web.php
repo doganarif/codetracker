@@ -3,6 +3,8 @@
 use App\Http\Controllers\LoginWithGithubController;
 use App\Livewire\ChallengeDetail;
 use App\Livewire\Dashboard;
+use App\Livewire\EventDetail;
+use App\Livewire\MyEvents;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -11,6 +13,12 @@ Route::view('/', 'welcome');
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::get('my-events', MyEvents::class)
+    ->middleware(['auth', 'verified'])
+    ->name('my-events');
+
+Route::get('/events/{eventId}', EventDetail::class)->name('events.detail');
 
 // Challenge detail route
 Route::get('challenge/{challenge}', ChallengeDetail::class)
