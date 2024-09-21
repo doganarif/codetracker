@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Carbon;
 
 class Challenge extends Model
 {
+    protected $fillable = [
+        'name',
+        'description',
+        'start_date',
+        'end_date',
+    ];
+
     protected function casts(): array
     {
         return [

@@ -49,7 +49,7 @@
                     <div class="text-center">
                         <div class="relative w-16 h-16 bg-gray-200 rounded-full overflow-hidden mx-auto">
                             @if ($user->profile_picture)
-                                <img src="{{ Storage::url($user->profile_picture) }}" alt="{{ $user->name }}" class="object-cover w-full h-full">
+                                <img src="{{ $user->profile_picture }}" alt="{{ $user->name }}" class="object-cover w-full h-full">
                             @else
                                 <span class="flex items-center justify-center w-full h-full text-gray-800 font-bold text-xl">
                                     {{ strtoupper(substr($user->name, 0, 1)) }}

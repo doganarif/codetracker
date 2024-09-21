@@ -4,6 +4,7 @@ use App\Http\Controllers\LoginWithGithubController;
 use App\Livewire\ChallengeDetail;
 use App\Livewire\Dashboard;
 use App\Livewire\EventDetail;
+use App\Livewire\GithubEventChart;
 use App\Livewire\MyEvents;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -24,6 +25,10 @@ Route::get('/events/{eventId}', EventDetail::class)->name('events.detail');
 Route::get('challenge/{challenge}', ChallengeDetail::class)
     ->middleware(['auth', 'verified'])
     ->name('challenge.detail');
+
+Route::get('event-chart', GithubEventChart::class)
+    ->middleware('auth')
+    ->name('event-chart');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

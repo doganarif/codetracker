@@ -14,11 +14,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -29,11 +24,6 @@ class User extends Authenticatable
         'github_refresh_token',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'remember_token',
     ];
@@ -47,18 +37,14 @@ class User extends Authenticatable
 
     public function events(): HasMany
     {
-        return $this->hasMany(UserEvent::class);
+        return $this->hasMany(UserEvent::class)->orderBy('event_date', 'desc');
     }
 
     public function fetchGithubData()
     {
-        $publicEvents = $this->getUserPublicEvents();
-        $orgs = $this->getUserOrganizations();
-        $orgEvents = $this->getUserOrganizationEvents($orgs);
+        $events = $this->getUserPublicEvents();
 
-        $allEvents = collect($publicEvents)->merge($orgEvents);
-
-        $filteredEvents = $allEvents->filter(function ($event) {
+        $filteredEvents = collect($events)->filter(function ($event) {
             return in_array($event['type'], ['PushEvent', 'IssuesEvent', 'PullRequestEvent']) &&
                    (! isset($event['payload']['action']) || $event['payload']['action'] === 'opened');
         });
@@ -76,27 +62,8 @@ class User extends Authenticatable
         return $response->successful() ? $response->json() : [];
     }
 
-    private function getUserOrganizations()
-    {
-        $response = Http::withToken($this->github_access_token)
-            ->get('https://api.github.com/user/orgs');
-
-        return $response->successful() ? $response->json() : [];
-    }
-
-    private function getUserOrganizationEvents($orgs)
-    {
-        return collect($orgs)->flatMap(function ($org) {
-            $response = Http::withToken($this->github_access_token)
-                ->get("https://api.github.com/users/{$this->nickname}/events/orgs/{$org['login']}?per_page=100");
-
-            return $response->successful() ? $response->json() : [];
-        });
-    }
-
     private function saveEvent($event)
     {
-        // Check if the event already exists in the database
         if (UserEvent::where('event_id', $event['id'])->exists()) {
             return; // Skip this event if it already exists
         }
