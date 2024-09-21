@@ -38,10 +38,28 @@
                 <strong>End Date:</strong> {{ $challenge->end_date->format('F j, Y g:i A') }}
             </p>
         </div>
+
+        <!-- User Progress -->
+        @if ($is_accepted)
+            <div class="border-t border-gray-200 pt-4 mt-6 w-full">
+                <h2 class="text-xl font-semibold text-gray-700 mb-2">Your Progress</h2>
+                <p class="text-gray-600">
+                    You have completed <strong>{{ $user_event_count }}</strong> out of <strong>{{ $challenge->required_count }}</strong> events.
+                </p>
+
+                <!-- Progress Bar -->
+                <div class="relative pt-1">
+                    <div class="overflow-hidden h-4 mb-4 text-xs flex rounded bg-gray-200">
+                        <div style="width: {{ $progress }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                    </div>
+                    <p class="text-sm text-gray-600">{{ round($progress, 2) }}% completed</p>
+                </div>
+            </div>
+        @endif
     </div>
 
     <!-- Accepted Users Card -->
-    <div class="bg-white shadow-md rounded-lg p-6 w-full">
+    <div class="bg-white shadow-md rounded-lg p-6 w-full mb-6">
         <h2 class="text-xl font-semibold text-gray-700 mb-4">Accepted Users</h2>
         @if ($challenge->users->count() > 0)
             <div class="grid grid-cols-5 gap-4 w-full">
@@ -64,5 +82,28 @@
             <p class="text-gray-500">No users have accepted this challenge yet.</p>
         @endif
     </div>
-</div>
 
+    <!-- Top Users by Event Count -->
+    <div class="bg-white shadow-md rounded-lg p-6 w-full">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Top Users by Event Count</h2>
+        @if ($top_users->count() > 0)
+            <div class="flex space-x-4 justify-center">
+                @foreach ($top_users as $user)
+                    <div class="text-center">
+                        <div class="relative w-16 h-16 bg-gray-200 rounded-full overflow-hidden mx-auto">
+                            @if ($user->profile_picture)
+                                <img src="{{ $user->profile_picture }}" alt="{{ $user->name }}" class="object-cover w-full h-full">
+                            @else
+                                <span class="flex items-center justify-center w-full h-full text-gray-800 font-bold text-xl">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p class="text-gray-500">No users have participated in this challenge yet.</p>
+        @endif
+    </div>
+</div>
