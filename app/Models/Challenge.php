@@ -25,6 +25,6 @@ class Challenge extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'challenge_user')
-            ->withPivot(['joined_at', 'total_count', 'is_active']);
+            ->withPivot(['joined_at', 'is_active']);
     }
 }

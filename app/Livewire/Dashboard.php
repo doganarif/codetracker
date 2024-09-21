@@ -9,7 +9,9 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     public $challenges;
+
     public $userChallenges;
+
     public $acceptedChallenges;
 
     public function render()
@@ -34,7 +36,6 @@ class Dashboard extends Component
             // Attach challenge to the user. It will be attached only once.
             auth()->user()->challenges()->syncWithoutDetaching([$challengeId => [
                 'joined_at' => now(),
-                'total_count' => 0,
                 'is_active' => true,
             ]]);
         }
@@ -50,4 +51,3 @@ class Dashboard extends Component
         }
     }
 }
-

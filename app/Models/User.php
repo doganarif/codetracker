@@ -31,7 +31,7 @@ class User extends Authenticatable
     public function challenges(): BelongsToMany
     {
         return $this->belongsToMany(Challenge::class, 'challenge_user')
-            ->withPivot('joined_at', 'total_count', 'is_active')
+            ->withPivot('joined_at', 'is_active')
             ->withTimestamps();
     }
 
