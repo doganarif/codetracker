@@ -42,4 +42,11 @@ return [
         'webhook_secret' => env('GITHUB_WEBHOOK_SECRET'),
     ],
 
+    'azure-openai' => [
+        'api_key' => env('AZURE_OPENAI_API_KEY'),
+        'endpoint' => env('AZURE_OPENAI_ENDPOINT'),
+        'deployment' => env('AZURE_OPENAI_DEPLOYMENT_NAME'),
+        'api_version' => '2023-05-15', // Update this as needed
+    ],
+
 ];

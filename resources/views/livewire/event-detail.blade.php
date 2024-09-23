@@ -52,6 +52,27 @@
             </dl>
         </div>
     </div>
+
+    <!-- AI Advice Button and Display -->
+    <div class="mt-6">
+        <button wire:click="getAIAdvice" wire:loading.attr="disabled" class="text-white bg-indigo-600 hover:bg-indigo-800 px-4 py-2 rounded">
+            Get AI Advice
+        </button>
+
+        <!-- Loading indicator while fetching AI advice -->
+        <span wire:loading class="text-indigo-600 ml-2">Fetching advice...</span>
+    </div>
+
+    <!-- Display AI Advice -->
+    @if ($aiAdvice)
+        <div class="mt-4 p-4 bg-gray-100 rounded">
+            <h4 class="text-lg font-semibold">AI Advice</h4>
+            <div class="prose max-w-none mt-2">
+                {!! $aiAdvice !!}
+            </div>
+        </div>
+    @endif
+
     <div class="mt-6">
         <a href="{{ route('my-events') }}" class="text-indigo-600 hover:text-indigo-900">Back to Events</a>
     </div>
